@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CollectionPoint;
-use SKAgarwal\GoogleApi\PlacesNew\GooglePlaces;
+use Illuminate\Support\Facades\Http;
 
 class CollectionPointController extends Controller
 {
@@ -14,14 +14,6 @@ class CollectionPointController extends Controller
         return view('map', compact('points'));
     }
 
-    public function getNearbyPlaces($latitude, $longitude, $radius = 500)
-    {
-        $googlePlaces = new GooglePlaces(env('GOOGLE_PLACES_API_KEY'));
-        $places = $googlePlaces->nearbySearch($latitude, $longitude, $radius, ['type' => 'recycling_center']);
-
-        return response()->json($places);
-    }
-
     public function getAllPoints()
     {
         return response()->json(CollectionPoint::all());
@@ -29,19 +21,38 @@ class CollectionPointController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'address' => 'required|string|max:255',
-            'operating_hours' => 'nullable|string|max:255',
-    ]);
+        $point = CollectionPoint::create($request->all());
+        return response()->json($point);
+    }
 
-    $point = CollectionPoint::create($validated);
+    public function getNearbyPlaces($latitude, $longitude, $radius = 3000)
+    {
+        $apiKey = env('GOOGLE_PLACES_API_KEY');
+        $query = urlencode('ponto de coleta de lixo');
 
-    return response()->json([
-        'message' => 'Collection point added successfully!',
-        'point' => $point
-    ], 201);
-}
+        $url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query={$query}&location={$latitude},{$longitude}&radius={$radius}&key={$apiKey}";
+
+        $response = Http::get($url);
+        $places = $response->json()['results'] ?? [];
+
+        $points = [];
+
+        foreach ($places as $place) {
+            $points[] = [
+                'name' => $place['name'],
+                'latitude' => $place['geometry']['location']['lat'],
+                'longitude' => $place['geometry']['location']['lng'],
+            ];
+        }
+
+        // Salva no banco
+        foreach ($points as $p) {
+            CollectionPoint::updateOrCreate(
+                ['name' => $p['name']],
+                ['latitude' => $p['latitude'], 'longitude' => $p['longitude']]
+            );
+        }
+
+        return response()->json($points);
+    }
 }
