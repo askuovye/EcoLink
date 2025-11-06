@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-600 hover:text-green-600 font-medium">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-600 hover:text-green-600 font-medium">
+                        {{ __('Home') }}
+                    </x-nav-link>
                 </div>
             </div>
 
