@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class CollectionPointController extends Controller
 {
+    public function index() {
+        $points = CollectionPoint::paginate(10);
+        return view('points.index', compact('points'));
+    }
+
     public function map()
     {
         $points = CollectionPoint::all(['name', 'latitude', 'longitude', 'operating_hours', 'address']);
@@ -21,8 +26,26 @@ class CollectionPointController extends Controller
 
     public function store(Request $request)
     {
-        $point = CollectionPoint::create($request->all());
-        return response()->json($point);
+        CollectionPoint::create($request->all());
+        return redirect()->route('alunos.index');
+    }
+
+     public function create() {
+        return view('points.create');
+    }
+
+    public function edit(CollectionPoint $point) {
+        return view('points.edit', compact('point'));
+    }
+
+    function update(Request $request, CollectionPoint $point) {
+        $point->update($request->all());
+        return redirect()->route('points.index');
+    }
+
+    public function destroy(CollectionPoint $point) {
+        $point->delete();
+        return redirect()->route('point.index');
     }
 
     public function getNearbyPlaces($latitude, $longitude, $radius = 3000)

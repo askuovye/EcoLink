@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class CollectionPoint extends Model
 {
     protected $table = 'points';
-    protected $fillable = ['name', 'latitude', 'longitude', 'operating_hours', 'address'];
+    protected $fillable = [
+        'name',
+        'address',
+        'latitude',
+        'longitude',
+        'type',
+        'operating_hours',
+    ];
 }

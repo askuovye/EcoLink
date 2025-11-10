@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-600 hover:text-green-600 font-medium">
                         {{ __('Home') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('points.index')" :active="request()->routeIs('points.*')" class="text-gray-600 hover:text-green-600 font-medium">
+                        {{ __('Pontos de Coleta') }}
+                    </x-nav-link>
                 </div>
             </div>
 
