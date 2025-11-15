@@ -9,12 +9,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('home');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/home', function () {
     return view('home');
 })->name('home');
+
+Route::get('/map', [CollectionPointController::class, 'map'])->name('map');   
+
+Route::post('/points/{point}/verify', [CollectionPointController::class, 'verify'])->name('points.verify');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

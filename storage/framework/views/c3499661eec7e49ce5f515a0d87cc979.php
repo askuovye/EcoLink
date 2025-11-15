@@ -1,5 +1,14 @@
-<x-app-layout>
-    <x-slot name="header">
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+     <?php $__env->slot('header', null, []); ?> 
         <div class="flex items-center justify-between">
             <h2 class="font-bold text-2xl text-black tracking-tight">
                 🌱 EcoLink - Mapa de Pontos de Descarte
@@ -10,7 +19,7 @@
                 🔍 Buscar Locais Próximos
             </button>
         </div>
-    </x-slot>
+     <?php $__env->endSlot(); ?>
 
     <div class="py-8 bg-white min-h-screen text-black">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -26,7 +35,7 @@
         </div>
     </div>
 
-    {{-- Leaflet CSS & JS (sem integrity para evitar mismatch/block) --}}
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -210,7 +219,7 @@
                     }
 
                     const pos = userMarker.getLatLng();
-                    const apiKey = "{{ env('GOOGLE_PLACES_API_KEY') }}";
+                    const apiKey = "<?php echo e(env('GOOGLE_PLACES_API_KEY')); ?>";
                     const radius = 7000;
 
                     // palavras-chave em PT e EN para aumentar cobertura
@@ -340,4 +349,14 @@
             }
         });
     </script>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\yikuu\Documents\EcoLinkProject(fudido)\ecolink\resources\views/map.blade.php ENDPATH**/ ?>

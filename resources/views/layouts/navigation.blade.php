@@ -16,13 +16,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-600 hover:text-green-600 font-medium">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-600 hover:text-green-600 font-medium">
                         {{ __('Home') }}
                     </x-nav-link>
                     <x-nav-link :href="route('points.index')" :active="request()->routeIs('points.*')" class="text-gray-600 hover:text-green-600 font-medium">
                         {{ __('Pontos de Coleta') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('map')" :active="request()->routeIs('map')" class="text-gray-600 hover:text-green-600 font-medium">
+                        {{ __('Mapa') }}
                     </x-nav-link>
                 </div>
             </div>

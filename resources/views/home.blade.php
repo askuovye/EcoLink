@@ -20,16 +20,16 @@
 
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start">
                     <!-- Botão principal (corrigido) -->
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('map') }}"
                     class="inline-flex items-center gap-3 bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-full text-lg font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">
                         <!-- ícone (inline svg) -->
                         <span>Ver Mapa de Descarte</span>
                     </a>
 
                     <!-- Botão secundário destacado e clean -->
-                    <a href="{{ route('home') }}#sobre"
+                    <a href="{{ route('points.index') }}#sobre"
                     class="inline-flex items-center gap-3 border-2 border-green-600 text-green-700 px-6 py-3 rounded-full text-lg font-semibold hover:bg-green-600 hover:text-white transition transform hover:-translate-y-0.5">
-                        Saiba Mais
+                        Pontos de Coleta Disponíveis
                     </a>
                 </div>
             </div>

@@ -14,5 +14,12 @@ class CollectionPoint extends Model
         'longitude',
         'type',
         'operating_hours',
+        'verified',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

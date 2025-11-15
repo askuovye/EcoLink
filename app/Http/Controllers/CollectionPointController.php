@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CollectionPoint;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class CollectionPointController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $points = CollectionPoint::paginate(10);
         return view('points.index', compact('points'));
     }
@@ -24,30 +26,79 @@ class CollectionPointController extends Controller
         return response()->json(CollectionPoint::all());
     }
 
-    public function store(Request $request)
+    public function create()
     {
-        CollectionPoint::create($request->all());
-        return redirect()->route('alunos.index');
-    }
-
-     public function create() {
         return view('points.create');
     }
 
-    public function edit(CollectionPoint $point) {
+    public function store(Request $request)
+    {
+        $data = $request->all();
+        $data['user_id'] = Auth::id(); // Define o dono do ponto
+
+        CollectionPoint::create($data);
+
+        return redirect()->route('points.index')
+            ->with('success', 'Ponto criado com sucesso!');
+    }
+
+    public function edit(CollectionPoint $point)
+    {
+        $user = Auth::user();
+
+        // Se não for admin e não for dono do ponto
+        if (!$user->is_admin && $point->user_id !== $user->id) {
+            abort(403, 'Você não tem permissão para editar este ponto.');
+        }
+
         return view('points.edit', compact('point'));
     }
 
-    function update(Request $request, CollectionPoint $point) {
+    public function update(Request $request, CollectionPoint $point)
+    {
+        $user = Auth::user();
+
+        if (!$user->is_admin && $point->user_id !== $user->id) {
+            abort(403, 'Você não pode atualizar este ponto.');
+        }
+
         $point->update($request->all());
-        return redirect()->route('points.index');
+
+        return redirect()->route('points.index')
+            ->with('success', 'Ponto atualizado com sucesso!');
     }
 
-    public function destroy(CollectionPoint $point) {
+    public function destroy(CollectionPoint $point)
+    {
+        $user = Auth::user();
+
+        if (!$user->is_admin && $point->user_id !== $user->id) {
+            abort(403, 'Você não pode excluir este ponto.');
+        }
+
         $point->delete();
-        return redirect()->route('point.index');
+
+        return redirect()->route('points.index')
+            ->with('success', 'Ponto excluído com sucesso!');
     }
 
+    // Aprovar/Verificar ponto ⇒ apenas ADMIN
+    public function verify(CollectionPoint $point)
+    {
+        $user = Auth::user();
+
+        if (!$user->is_admin) {
+            abort(403, 'Apenas administradores podem aprovar pontos.');
+        }
+
+        $point->verified = true;
+        $point->save();
+
+        return redirect()->route('points.index')
+            ->with('success', 'Ponto verificado com sucesso!');
+    }
+
+    // Buscar locais próximos via Google
     public function getNearbyPlaces($latitude, $longitude, $radius = 3000)
     {
         $apiKey = env('GOOGLE_PLACES_API_KEY');

@@ -60,29 +60,39 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="flex justify-center space-x-3">
 
-                                            <!-- Editar -->
-                                            <a href="<?php echo e(route('points.edit', $point->id)); ?>"
-                                               class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow transition-transform transform hover:scale-105 duration-200">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2M12 4v16m8-8H4" />
-                                                </svg>
-                                                Editar
-                                            </a>
+                                            
+                                            <?php if(auth()->check() && (auth()->user()->is_admin || auth()->id() === $point->user_id)): ?>
+                                                <a href="<?php echo e(route('points.edit', $point->id)); ?>"
+                                                class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow transition-transform transform hover:scale-105 duration-200">
+                                                    ✏️ Editar
+                                                </a>
+                                            <?php endif; ?>
 
-                                            <!-- Excluir -->
-                                            <form action="<?php echo e(route('points.destroy', $point->id)); ?>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este ponto?')">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <button type="submit"
-                                                    class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg shadow transition-transform transform hover:scale-105 duration-200">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                    Excluir
-                                                </button>
-                                            </form>
+                                            
+                                            <?php if(auth()->check() && (auth()->user()->is_admin || auth()->id() === $point->user_id)): ?>
+                                                <form action="<?php echo e(route('points.destroy', $point->id)); ?>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este ponto?')">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
+                                                    <button type="submit"
+                                                        class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg shadow transition-transform transform hover:scale-105 duration-200">
+                                                        🗑 Excluir
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+
+                                            
+                                            <?php if(auth()->check() && auth()->user()->is_admin && !$point->verified): ?>
+                                                <form action="<?php echo e(route('points.verify', $point->id)); ?>" method="POST">
+                                                    <?php echo csrf_field(); ?>
+                                                    <button type="submit"
+                                                        class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg shadow transition-transform transform hover:scale-105 duration-200">
+                                                        ✅ Aprovar
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
+
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>

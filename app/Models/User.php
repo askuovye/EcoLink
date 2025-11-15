@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function points()
+    {
+        return $this->hasMany(CollectionPoint::class);
+    }
 }
