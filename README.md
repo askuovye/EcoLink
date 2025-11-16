@@ -39,6 +39,7 @@ cd EcoLink
 ```bash
 composer install
 npm install
+```
 
 ### **3. Configurar os arquivos**
 ```bash
@@ -47,24 +48,29 @@ Database
 APP_URL
 Credenciais do Breeze
 Outras configs necessárias
+```
 
 ### **4. Gerar chave da aplicação**
 ```bash
 php artisan key:generate
+```
 
 ### **5. Rodar as migrations**
 ```bash
 php artisan migrate
+```
 
 ### **6. Iniciar o servidor**
 ```bash
 php artisan serve
 npm run dev
+```
 
 ## Usuário Teste
 ```bash
 Email: teste@ecolink.com
 Senha: 12345678
+```
 
 # Documentação da API
 A API segue uma estrutura REST organizada em Controllers, Services e Repositories.
@@ -85,10 +91,12 @@ Exemplo de resposta:
     "longitude": -51.1234
   }
 ]
+```
 
 ### **GET /collection-points/{id}**
 ```bash
 Retorna detalhes de um ponto de coleta específico.
+```
 
 ### **POST /collection-points**
 Cria um novo ponto.
@@ -100,6 +108,7 @@ Validações feitas via StoreCollectionPointRequest.
   "latitude": -25.1122,
   "longitude": -51.7788
 }
+```
 
 ### **PUT /collection-points/{id}**
 Atualiza um ponto de coleta.
@@ -126,16 +135,19 @@ Responsáveis pela comunicação com o banco de dados.
 fetch("http://localhost:8000/collection-points")
   .then(res => res.json())
   .then(data => console.log(data));
+```
 
 ### **Exemplo usando cURL**
 ```bash
 curl -X GET http://localhost:8000/collection-points
+```
 
 ### **Criar um ponto**
 ```bash
 curl -X POST http://localhost:8000/collection-points \
   -H "Content-Type: application/json" \
   -d '{"name":"Ponto X","address":"Rua Y","latitude":-25.1,"longitude":-51.2}'
+```
 
 ## Licença
 Este projeto está sob a licença MIT.
