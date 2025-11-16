@@ -12,7 +12,6 @@
                     <form action="{{ route('points.store') }}" method="POST">
                         @csrf
 
-                        <!-- Nome -->
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Nome do Ponto
@@ -22,7 +21,6 @@
                                    required>
                         </div>
 
-                        <!-- Endereço (com autocomplete) -->
                         <div class="mb-4">
                             <label for="autocomplete" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Endereço
@@ -33,11 +31,9 @@
                                    required>
                         </div>
 
-                        <!-- Campos ocultos de coordenadas -->
                         <input type="hidden" id="latitude" name="latitude">
                         <input type="hidden" id="longitude" name="longitude">
 
-                        <!-- Tipo -->
                         <div class="mb-4">
                             <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Tipo de Descarte
@@ -48,7 +44,6 @@
                                    required>
                         </div>
 
-                        <!-- Botão -->
                         <div class="flex justify-end">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                                 {{ __('Criar Ponto') }}

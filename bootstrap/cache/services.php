@@ -34,6 +34,7 @@
     30 => 'Termwind\\Laravel\\TermwindServiceProvider',
     31 => 'SKAgarwal\\GoogleApi\\ServiceProvider',
     32 => 'App\\Providers\\AppServiceProvider',
+    33 => 'App\\Providers\\RepositoryServiceProvider',
   ),
   'eager' => 
   array (
@@ -54,6 +55,7 @@
     14 => 'Termwind\\Laravel\\TermwindServiceProvider',
     15 => 'SKAgarwal\\GoogleApi\\ServiceProvider',
     16 => 'App\\Providers\\AppServiceProvider',
+    17 => 'App\\Providers\\RepositoryServiceProvider',
   ),
   'deferred' => 
   array (

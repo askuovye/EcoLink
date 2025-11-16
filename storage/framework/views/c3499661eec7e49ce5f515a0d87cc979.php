@@ -26,10 +26,8 @@
             <div class="bg-white shadow sm:rounded-lg border border-gray-200 p-6">
                 <p id="status-message" class="text-center text-sm text-gray-600 mb-4">Veja os pontos de coleta próximos de você</p>
 
-                <!-- spinner / erro -->
                 <div id="alert" class="hidden mb-4"></div>
 
-                <!-- Container do mapa (altura fixa para evitar 0 height) -->
                 <div id="map" class="w-full rounded-md border border-gray-200" style="height:640px;"></div>
             </div>
         </div>
@@ -45,7 +43,6 @@
             const statusEl = document.getElementById('status-message');
 
             function showAlert(message, type = 'error') {
-                // type: 'error' or 'info' or 'success'
                 alertEl.className = 'mb-4 p-3 rounded-md text-center';
                 if (type === 'error') {
                     alertEl.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-200');
@@ -58,33 +55,27 @@
                 alertEl.classList.remove('hidden');
             }
 
-            // Verifica se Leaflet foi carregado
             if (typeof L === 'undefined') {
                 showAlert("Leaflet não carregou — verifique se a CDN está sendo bloqueada por uma extensão (AdBlock / Brave Shields). Abra em modo anônimo ou desative as extensões temporariamente.", 'error');
                 console.error('Leaflet não definido (L is undefined).');
                 return;
             }
 
-            // Inicializa o mapa
             try {
                 const map = L.map('map', { zoomControl: true }).setView([-25.3902, -51.4627], 13);
 
-                // Camada clara (OpenStreetMap)
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
-                // ícone do usuário (pequeno)
                 const userIcon = L.icon({
                     iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
                     iconSize: [34, 34],
                     iconAnchor: [17, 34]
                 });
 
-                // Spinner simples enquanto carrega pontos
                 statusEl.innerHTML = 'Carregando pontos...';
-                // fetch pontos e adiciona marcadores
                 let points;
                 try {
                     const res = await fetch('/api/points');
@@ -97,7 +88,6 @@
                     points = [];
                 }
 
-                // adiciona marcadores do banco
                 if (points && points.length) {
                     const iconsByType = {
                         vidro: L.icon({
@@ -149,16 +139,13 @@
                         const lng = parseFloat(p.longitude);
                         if (!isFinite(lat) || !isFinite(lng)) return;
 
-                        // escolhe ícone conforme tipo
                         const type = (p.type || "").toLowerCase();
                         const icon = iconsByType[type] || iconsByType.default;
 
-                        // define texto/ícone de verificação
                         const verifiedBadge = p.verified
                             ? '<span class="text-green-600 font-semibold">✔️ Aprovado</span>'
                             : '<span class="text-gray-500">⏳ Pendente</span>';
 
-                        // título com estrela se verificado
                         const title = p.verified
                             ? `⭐ <strong>${escapeHtml(p.name)}</strong>`
                             : `<strong>${escapeHtml(p.name)}</strong>`;
@@ -176,7 +163,6 @@
                         const marker = L.marker([lat, lng], { icon }).addTo(map);
                         marker.bindPopup(popupHtml);
 
-                        // animação de entrada
                         if (marker._icon) {
                             marker._icon.style.opacity = 0;
                             marker._icon.style.transform = 'scale(0.85)';
@@ -193,7 +179,6 @@
                     statusEl.innerText = 'Nenhum ponto encontrado no banco.';
                 }
 
-                // obtém localização do usuário
                 let userMarker = null;
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition((position) => {
@@ -204,14 +189,12 @@
                         map.setView([lat, lng], 13);
                     }, (err) => {
                         console.warn('Geolocation erro', err);
-                        // não exibe alerta, apenas informa no status
                         statusEl.innerText = statusEl.innerText + ' (Localização indisponível)';
                     }, {timeout: 8000});
                 } else {
                     statusEl.innerText = statusEl.innerText + ' (Geolocation não suportado)';
                 }
 
-                // evento do botão "Buscar Locais Próximos" (usa proxy /api/proxy implementado por você)
                 document.getElementById('buscar-locais').addEventListener('click', async () => {
                     if (!userMarker) {
                         alert("Localização ainda não carregada. Aguarde alguns segundos e tente novamente.");
@@ -222,7 +205,6 @@
                     const apiKey = "<?php echo e(env('GOOGLE_PLACES_API_KEY')); ?>";
                     const radius = 7000;
 
-                    // palavras-chave em PT e EN para aumentar cobertura
                     const keywords = [
                         'reciclagem', 'reciclar', 'ponto de coleta', 'ponto de reciclagem',
                         'coleta seletiva', 'centro de reciclagem', 'lixo eletrônico',
@@ -230,7 +212,6 @@
                     ];
                     const keywordParam = encodeURIComponent(keywords.join('|'));
 
-                    // usamos type=establishment + keyword + language=pt-BR
                     const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.lat},${pos.lng}&radius=${radius}&type=establishment&keyword=${keywordParam}&language=pt-BR&key=${apiKey}`;
 
                     try {
@@ -242,26 +223,20 @@
                             alert('Nenhum local de descarte encontrado por perto 😕');
                             return;
                         }
-                        
-                        // Filtragem robusta no cliente:
+
                         const filtered = placesData.results.filter(place => {
-                            // 1) aceita se o place.types indicar recycling_center
                             if (place.types && place.types.includes('recycling_center')) return true;
 
-                            // 2) cria um texto combinado para buscar keywords
                             const text = ((place.name||'') + ' ' + (place.vicinity||'') + ' ' + (place.types||[]).join(' ')).toLowerCase();
 
-                            // 3) verifica presença de qualquer keyword
                             for (const k of keywords) {
                                 if (text.includes(k.toLowerCase())) return true;
                             }
 
-                            // senão, rejeita
                             return false;
                         });
                         
                         if (filtered.length === 0) {
-                            // tenta fallback mais permissivo (ex.: aceitar qualquer lugar com "recycl" em inglês)
                             const fallback = (placesData.results || []).filter(p => {
                                 const t = ((p.name||'') + ' ' + (p.vicinity||'')).toLowerCase();
                                 return t.includes('recycl') || t.includes('recicl');
@@ -269,7 +244,6 @@
                             if (fallback.length) {
                                 showAlert(`${fallback.length} locais possivelmente relevantes encontrados (fallback).`, 'info');
                             }
-                            // usa fallback se existir, senão usa filtered (vazio)
                             resultsToShow = fallback.length ? fallback : filtered;
                         } else {
                             resultsToShow = filtered;
@@ -280,12 +254,10 @@
                             return;
                         }
 
-                        // adiciona apenas os N melhores para não lotar o mapa
                         const maxShow = 12;
                         resultsToShow.slice(0, maxShow).forEach((place, i) => {
                             if (!place.geometry) return;
 
-                            // 🔧 Normalização para lidar com respostas inconsistentes
                             const lat =
                                 typeof place.geometry.location.lat === "function"
                                     ? place.geometry.location.lat()
@@ -310,7 +282,6 @@
                                 `<strong>${escapeHtml(name)}</strong><br><small>${escapeHtml(address)}</small>`
                             );
 
-                            // animação suave
                             if (m._icon) {
                                 m._icon.style.opacity = 0;
                                 m._icon.style.transform = "scale(0.8)";
@@ -329,8 +300,6 @@
                 }
             });
 
-
-                // função utilitária para escapar HTML em popups
                 function escapeHtml(text) {
                     if (!text) return '';
                     return text
@@ -341,7 +310,6 @@
                         .replace(/'/g, "&#039;");
                 }
 
-                // força redimensão caso o container tenha mudado
                 setTimeout(() => map.invalidateSize(), 300);
             } catch (err) {
                 console.error('Erro na inicialização do mapa:', err);
