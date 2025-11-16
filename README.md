@@ -1,61 +1,141 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌱 EcoLink — Plataforma Comunitária de Pontos de Descarte
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+O **EcoLink** é uma plataforma desenvolvida em Laravel que permite que qualquer pessoa visualize, cadastre e ajude a mapear pontos de descarte de lixo e materiais recicláveis em sua cidade.  
+O objetivo é facilitar o acesso a locais adequados de descarte, promover a colaboração comunitária e contribuir significativamente para a preservação do meio ambiente.  
+O projeto busca incentivar práticas sustentáveis e reduzir o impacto ambiental causado pelo descarte incorreto de resíduos.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tecnologias e Recursos Utilizados
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Laravel 11**
+- **PHP 8.2+**
+- **MySQL**
+- **Leaflet.js**
+- **TailwindCSS**
+- **Composer**
+- **NPM + Vite**
+- **Laravel Breeze (autenticação)**
+- **Arquitetura organizada em:**
+  - `App/Http/Controllers`
+  - `App/Http/Repositories`
+  - `App/Http/Services`
+  - `App/Http/Requests`
+  - `App/Http/Middleware`
+  - `App/Models`
+  - `App/Interfaces`
+  - `App/Providers`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+##  Instalação e Execução
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **1. Clonar o repositório**
+```bash
+git clone https://github.com/askuovye/EcoLink.git
+cd EcoLink
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### **2. Instalar dependências**
+```bash
+composer install
+npm install
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### **3. Configurar os arquivos**
+```bash
+cp .env.example .env
+Database
+APP_URL
+Credenciais do Breeze
+Outras configs necessárias
 
-## Laravel Sponsors
+### **4. Gerar chave da aplicação**
+```bash
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### **5. Rodar as migrations**
+```bash
+php artisan migrate
 
-### Premium Partners
+### **6. Iniciar o servidor**
+```bash
+php artisan serve
+npm run dev
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Usuário Teste
+```bash
+Email: teste@ecolink.com
+Senha: 12345678
 
-## Contributing
+# Documentação da API
+A API segue uma estrutura REST organizada em Controllers, Services e Repositories.
+Abaixo estão as rotas principais utilizadas para manipulação dos pontos de coleta.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Rotas — Pontos de Coleta (CollectionPoint)
 
-## Code of Conduct
+### **GET /collection-points**
+Retorna todos os pontos de coleta cadastrados.
+```bash
+Exemplo de resposta:
+[
+  {
+    "id": 1,
+    "name": "Ponto Central",
+    "address": "Rua A, 123",
+    "latitude": -25.1234,
+    "longitude": -51.1234
+  }
+]
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### **GET /collection-points/{id}**
+```bash
+Retorna detalhes de um ponto de coleta específico.
 
-## Security Vulnerabilities
+### **POST /collection-points**
+Cria um novo ponto.
+Validações feitas via StoreCollectionPointRequest.
+```bash
+{
+  "name": "Ponto Verde",
+  "address": "Rua B",
+  "latitude": -25.1122,
+  "longitude": -51.7788
+}
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### **PUT /collection-points/{id}**
+Atualiza um ponto de coleta.
 
-## License
+### **DELETE /collection-points/{id}**]
+Remove um ponto de coleta do sistema.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Arquitetura Interna (Resumo)
+- Controllers
+
+Definem as rotas e retornam respostas formatadas.
+
+- Services
+
+Implementam regras de negócio e validações.
+
+- Repositories
+
+Responsáveis pela comunicação com o banco de dados.
+
+## Consumo da API
+### **Exemplo usando JavaScript (fetch)**
+```bash
+fetch("http://localhost:8000/collection-points")
+  .then(res => res.json())
+  .then(data => console.log(data));
+
+### **Exemplo usando cURL**
+```bash
+curl -X GET http://localhost:8000/collection-points
+
+### **Criar um ponto**
+```bash
+curl -X POST http://localhost:8000/collection-points \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ponto X","address":"Rua Y","latitude":-25.1,"longitude":-51.2}'
+
+## Licença
+Este projeto está sob a licença MIT.
