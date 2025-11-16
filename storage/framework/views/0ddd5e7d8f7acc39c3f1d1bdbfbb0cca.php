@@ -103,7 +103,10 @@
                             <?php endif; ?>
                         </tbody>
                     </table>
+                    <div class="mt-4">
+                            <?php echo e($points->links()); ?>
 
+                        </div>
                 </div>
             </div>
         </div>

@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Http;
 
 class CollectionPointController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | ❗ CRUD usado pelo painel Laravel (não mexi)
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
         $points = CollectionPoint::paginate(10);
@@ -34,7 +40,7 @@ class CollectionPointController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        $data['user_id'] = Auth::id(); // Define o dono do ponto
+        $data['user_id'] = Auth::id();
 
         CollectionPoint::create($data);
 
@@ -46,7 +52,6 @@ class CollectionPointController extends Controller
     {
         $user = Auth::user();
 
-        // Se não for admin e não for dono do ponto
         if (!$user->is_admin && $point->user_id !== $user->id) {
             abort(403, 'Você não tem permissão para editar este ponto.');
         }
@@ -82,7 +87,6 @@ class CollectionPointController extends Controller
             ->with('success', 'Ponto excluído com sucesso!');
     }
 
-    // Aprovar/Verificar ponto ⇒ apenas ADMIN
     public function verify(CollectionPoint $point)
     {
         $user = Auth::user();
@@ -98,35 +102,70 @@ class CollectionPointController extends Controller
             ->with('success', 'Ponto verificado com sucesso!');
     }
 
-    // Buscar locais próximos via Google
-    public function getNearbyPlaces($latitude, $longitude, $radius = 3000)
+
+    /*
+    |--------------------------------------------------------------------------
+    | 🌎 API REST PARA O APP FLUTTER (RECOMENDADO)
+    |--------------------------------------------------------------------------
+    */
+
+    public function nearby(Request $request)
     {
-        $apiKey = env('GOOGLE_PLACES_API_KEY');
-        $query = urlencode('ponto de coleta de lixo');
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
 
-        $url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query={$query}&location={$latitude},{$longitude}&radius={$radius}&key={$apiKey}";
+        $lat = $request->lat;
+        $lng = $request->lng;
 
-        $response = Http::get($url);
-        $places = $response->json()['results'] ?? [];
+        // Usa sempre a mesma chave
+        $key = env('GOOGLE_PLACES_API_KEY');
 
-        $points = [];
+        $response = Http::get(
+            'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+            [
+                'location' => "$lat,$lng",
+                'radius'   => 5000,
+                'keyword'  => 'reciclagem|descarte|ponto de coleta',
+                'language' => 'pt-BR',
+                'key'      => $key,
+            ]
+        );
 
-        foreach ($places as $place) {
-            $points[] = [
+        if ($response->failed()) {
+            return response()->json([
+                'error' => 'Erro ao consultar Google Places',
+                'details' => $response->body()
+            ], 500);
+        }
+
+        $results = $response->json()['results'] ?? [];
+
+        $output = [];
+
+        foreach ($results as $place) {
+            $output[] = [
                 'name' => $place['name'],
-                'latitude' => $place['geometry']['location']['lat'],
-                'longitude' => $place['geometry']['location']['lng'],
+                'lat'  => $place['geometry']['location']['lat'],
+                'lng'  => $place['geometry']['location']['lng'],
+                'address' => $place['vicinity'] ?? '',
             ];
         }
 
-        // Salva no banco
-        foreach ($points as $p) {
+        // Salva no banco com updateOrCreate()
+        foreach ($output as $p) {
             CollectionPoint::updateOrCreate(
-                ['name' => $p['name']],
-                ['latitude' => $p['latitude'], 'longitude' => $p['longitude']]
+                ['name' => $p['name'], 'latitude' => $p['lat'], 'longitude' => $p['lng']],
+                [
+                    'name' => $p['name'],
+                    'latitude' => $p['lat'],
+                    'longitude' => $p['lng'],
+                    'address' => $p['address'],
+                ]
             );
         }
 
-        return response()->json($points);
+        return response()->json($output);
     }
 }

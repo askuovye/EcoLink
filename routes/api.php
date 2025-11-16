@@ -1,14 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\CollectionPointController;
 
 Route::get('/points', [CollectionPointController::class, 'getAllPoints']);
-Route::get('/nearby/{latitude}/{longitude}/{radius?}', [CollectionPointController::class, 'getNearbyPlaces']);
 Route::post('/points', [CollectionPointController::class, 'store']);
+
+// ROTA CERTA PARA O FLUTTER
+Route::get('/nearby', [CollectionPointController::class, 'nearby']);
+
 Route::get('/map', [CollectionPointController::class, 'map']);
+
 Route::get('/proxy', function (Request $request) {
     $url = $request->query('url');
 
